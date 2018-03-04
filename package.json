@@ -1,0 +1,70 @@
+{
+  "name": "dynamodb-client",
+  "version": "1.0.1",
+  "description": "Node / JS client for Dynamo DB",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "scripts": {
+    "build": "babel src --out-dir dist/cjs && BABEL_ENV=esm babel src --out-dir dist/esm",
+    "lint": "eslint src",
+    "prepublish": "yarn build",
+    "test": "NODE_ENV=development jest test/unit/",
+    "watch": "yarn build --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuqire/dynamodb-client.git"
+  },
+  "keywords": [
+    "dynamodb"
+  ],
+  "author": "Tuqire hussain <me@tuqire.com> (http://www.tuqire.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tuqire/dynamodb-client/issues"
+  },
+  "homepage": "https://github.com/tuqire/dynamodb-client#readme",
+  "dependencies": {
+    "aws-sdk": "^2.202.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.1",
+    "babel-jest": "^22.4.1",
+    "babel-plugin-add-header-comment": "^1.0.3",
+    "babel-plugin-array-includes": "^2.0.3",
+    "babel-plugin-inline-json-import": "^0.2.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-es2017-object-entries": "0.0.4",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2016": "^6.24.1",
+    "eslint": "^4.18.2",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-babel": "^4.1.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jest": "^21.12.3",
+    "eslint-plugin-markdown": "^1.0.0-beta.7",
+    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "jest": "^22.4.2",
+    "pre-commit": "^1.2.2"
+  },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/"
+    ],
+    "clearMocks": true,
+    "resetModules": true,
+    "moduleNameMapper": {
+      "^@/(.+)": "<rootDir>/src/$1"
+    }
+  },
+  "pre-commit": [
+    "test"
+  ]
+}
