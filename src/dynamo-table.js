@@ -1,4 +1,4 @@
-import DynamoDB from './dynamo-db'
+import { DynamoDB } from './setup'
 import { buildDBItem, parseDBItem } from './helpers'
 
 export default class DynamoTable {
@@ -7,6 +7,10 @@ export default class DynamoTable {
     schema = {},
     primaryKey = ''
   }) {
+    if (!DynamoDB) {
+      throw new Error('need to call `setAwsConfig` to setup connection. Read readme for more info')
+    }
+
     this.DynamoDB = DynamoDB
     this.tableName = tableName
     this.schema = schema
@@ -40,7 +44,7 @@ export default class DynamoTable {
     return this
   }
 
-  async add (item, options = {}) {
+  add (item, options = {}) {
     this.validateInstance()
 
     return new Promise((resolve, reject) =>
@@ -59,7 +63,7 @@ export default class DynamoTable {
     )
   }
 
-  async delete (itemId, options = {}) {
+  delete (itemId, options = {}) {
     this.validateInstance()
 
     return new Promise((resolve, reject) =>
@@ -77,7 +81,7 @@ export default class DynamoTable {
     )
   }
 
-  async get (itemId, options = {}) {
+  get (itemId, options = {}) {
     this.validateInstance()
 
     return new Promise((resolve, reject) =>
@@ -95,7 +99,7 @@ export default class DynamoTable {
     )
   }
 
-  async update (itemId, item, options = {}) {
+  update (itemId, item, options = {}) {
     this.validateInstance()
 
     const Item = buildDBItem(item, this.schema)
