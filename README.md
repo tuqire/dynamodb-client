@@ -1,6 +1,6 @@
 # DynamoDB Client
 
-A lightweight JS / Node DynamoDB client which uses the `AWS SDK`, but abstracts out some of its complexities.
+A lightweight JS / Node DynamoDB client which uses the `AWS SDK`, but abstracts out some of its complexities. Also replaces callbacks with promises.
 
 **NOTE:** This lib is still in it's early stages. Only a few of the `DynamoDB` methods have been abstracted out. All the original methods are available on the `this.DynamoDB` attribute.
 
