@@ -1,5 +1,7 @@
 import AWS from 'aws-sdk'
 
+export let DynamoDB
+
 export const setAwsConfig = ({
   accessKeyId,
   secretAccessKey,
@@ -13,7 +15,7 @@ export const setAwsConfig = ({
     endpoint: endpoint || `https://dynamodb.${region}.amazonaws.com`
   })
 
+  DynamoDB = new AWS.DynamoDB()
+
   return AWS
 }
-
-export default AWS

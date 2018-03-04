@@ -3,9 +3,7 @@
     "development": {
       "presets": [
         ["env", {
-          "targets": {
-            "browsers": ["last 2 versions"]
-          }
+          "targets": { "node": "6.10.0" }
         }]
       ],
       "plugins": [
