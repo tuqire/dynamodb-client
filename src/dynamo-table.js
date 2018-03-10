@@ -45,13 +45,15 @@ export default class DynamoTable {
   }
 
   add (item, options = {}) {
+    const Item = buildDBItem(item, this.schema)
+
     this.validateInstance()
 
     return new Promise((resolve, reject) =>
       DynamoDB.putItem({
         TableName: this.tableName,
         ReturnValues: 'NONE',
-        Item: buildDBItem(item, this.schema),
+        Item,
         ...options
       }, (err, res) => {
         if (err) {
@@ -100,26 +102,12 @@ export default class DynamoTable {
   }
 
   update (itemId, item, options = {}) {
-    this.validateInstance()
-
-    const Item = buildDBItem(item, this.schema)
     const keys = Object.keys(item)
-    let keyCounter = 96
+    const Item = buildDBItem(item, this.schema)
+    const keyMap = this.buildKeyMap(keys)
+    const updateExpression = this.buildUpdateExpression(keys, keyMap)
 
-    const keyMap = keys.reduce((acc, key) => {
-      keyCounter++
-
-      return {
-        ...acc,
-        [key]: String.fromCharCode(keyCounter).toLowerCase()
-      }
-    }, {})
-
-    const updateExpression = keys.reduce((acc, key) => {
-      acc.push(`#${keyMap[key].toUpperCase()} = :${keyMap[key]}`)
-
-      return acc
-    }, []).join(', ')
+    this.validateInstance()
 
     return new Promise((resolve, reject) =>
       DynamoDB.updateItem({
@@ -148,7 +136,7 @@ export default class DynamoTable {
 
   validateInstance () {
     if (!this.tableName || !this.schema || !this.primaryKey) {
-      throw new Error('require tableName, schema, and primaryKey to make requests to DynamoDB')
+      throw new Error('tableName, schema, and primaryKey should be set to make requests to DynamoDB')
     } else if (!this.schema[this.primaryKey]) {
       throw new Error('Primary key needs to exist within schema')
     } else {
@@ -158,7 +146,28 @@ export default class DynamoTable {
 
   buildPrimaryKey (itemId) {
     return {
-      [this.primaryKey]: { [this.schema[this.primaryKey]]: itemId }
+      [this.primaryKey]: { [this.schema[this.primaryKey]]: `${itemId}` }
     }
+  }
+
+  buildKeyMap (keys) {
+    let keyCounter = 96
+
+    return keys.reduce((acc, key) => {
+      keyCounter++
+
+      return {
+        ...acc,
+        [key]: String.fromCharCode(keyCounter).toLowerCase()
+      }
+    }, {})
+  }
+
+  buildUpdateExpression (keys, keyMap) {
+    return keys.reduce((acc, key) => {
+      acc.push(`#${keyMap[key].toUpperCase()} = :${keyMap[key]}`)
+
+      return acc
+    }, []).join(', ')
   }
 }
