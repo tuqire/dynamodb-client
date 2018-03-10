@@ -1,6 +1,6 @@
 # DynamoDB Client
 
-A lightweight JS / Node DynamoDB client which uses the `AWS SDK`, but abstracts out some of its complexities.
+A lightweight JS / Node DynamoDB client which uses the `AWS SDK`, but abstracts out some of its complexities. Also replaces callbacks with promises.
 
 **NOTE:** This lib is still in it's early stages. Only a few of the `DynamoDB` methods have been abstracted out. All the original methods are available on the `this.DynamoDB` attribute.
 
@@ -21,9 +21,9 @@ setAwsConfig({
   region
 })
 
-const table = new DynamoTable({
-  tableName = 'MyTable',
-  schema = {
+const myTable = new DynamoTable({
+  tableName: 'MyTable',
+  schema: {
     myPrimaryKey: 'S',
     myString: 'S',
     myStringSet: 'SS',
@@ -35,24 +35,26 @@ const table = new DynamoTable({
       }
     }
   },
-  primaryKey = 'myPrimaryKey'
+  primaryKey: 'myPrimaryKey'
 })
 
 const testLib = async () => {
-  await table.add({
-    myPrimaryKey: '3',
+  const itemId = 'someId'
+
+  await myTable.add({
+    myPrimaryKey: itemId,
     myString: 'val',
     myStringSet: ['val1', 'val2', 'val3']
   })
 
-  await table.get(itemId)
+  await myTable.get(itemId)
 
-  await table.update(itemId, {
+  await myTable.update(itemId, {
     myString: 'newVal',
-    myStringSet: 'newVal'
+    myStringSet: ['newVal1']
   })
 
-  await table.delete(itemId)
+  await myTable.delete(itemId)
 }
 ```
 
@@ -64,18 +66,28 @@ The library also exports two methods which help in the construction and deconstr
 ```js
 import { buildDBItem, parseDBItem } from 'dynamodb-client'
 
-const schema =
-
-const item = {
-  myString: 'string'
-  myBool: false,
-  myStringSet: ['str', 'str2', 'str3'],
+const schema = {
+  myString: 'S',
+  myBool: 'B',
+  myStringSet: 'SS',
   myMap: {
-    subString: 'string'
+    type: 'M',
+    schema: {
+      subString: 'S'
+    }
   }
 }
 
-const transformedItem = buildDBItem(item)
+const item = {
+  myString: 'foo'
+  myBool: false,
+  myStringSet: ['str', 'str2', 'str3'],
+  myMap: {
+    subString: 'bar'
+  }
+}
+
+const transformedItem = buildDBItem(item, schema)
 
 /**
 transformedItem === {
@@ -90,7 +102,7 @@ transformedItem === {
 }
 **/
 
-const convertedItem = parseDBItem(transformedItem)
+const convertedItem = parseDBItem(transformedItem, schema)
 
 /**
 convertedItem === item
@@ -100,6 +112,7 @@ convertedItem === item
 ## Todo
 
 1. Add unit tests.
+2. convert item vals which are numbers to string automatically
 2. Convert more methods from DynamoDB SDK.
 3. Register dynamoDB in a cleaner way.
 
